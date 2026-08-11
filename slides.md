@@ -184,6 +184,21 @@ layout: section
 
 ---
 
+# What is BioJulia
+
+<v-clicks>
+
+- A loose collection of bioinformatics and other bio-related packages
+- "Led" by `@kescobo` (that's me) and `@jakobnissen` 
+  (but our authority is rather tepid)
+- Main benefits of Org membership are discoverability (maybe)
+  and increased bus factor in case you disappear
+- Unified documentation at https://biojulia.dev
+
+</v-clicks>
+
+---
+
 # Most stared repos
 
 <img src="./images/stars.svg" class="border border-border" />
@@ -326,14 +341,17 @@ VH01194:15:AAAWT2VHV:1:1101:49456:1398:N:0:GAACTGAGCG+CGCTCCACGA#0/1__1.101 16 1
 </style>
 
 ---
-class: text-sm
+layout: two-cols-header
+layoutClass: gap-8 items-start
 ---
 
 # Automa.jl enables the construction of correct but efficient file parsers
 
-Automa makes Deterministic Finite Automata
+<div class="flex items-center justify-center gap-4">
+<img src="./images/cajun/Automa.png" class="max-h-[8vh]" />
+</div>
 
-<img src="./images/cajun/Automa.png" class="max-h-[12vh] mx-auto" />
+::left::
 
 <div v-click>
 
@@ -348,6 +366,8 @@ end
 
 </div>
 
+::right::
+
 <div v-click>
 
 ```julia
@@ -361,18 +381,28 @@ end
 
 </div>
 
-<div class="flex gap-2 absolute bottom-10 right-8">
-<img src="./images/bicycle1885_head.jpg" class="max-h-[8vh] border border-border" />
-<img src="./images/jakobnissen_head.jpg" class="max-h-[8vh] border border-border" />
-</div>
+::bottom::
 
-<div class="citation-caption">author: `@bicycle1885`, many improvements: `@jakobnissen` · Repo: https://github.com/BioJulia/Automa.jl</div>
+<div class="citation-caption !left-14">author: `@bicycle1885`, many improvements: `@jakobnissen` · Repo: https://github.com/BioJulia/Automa.jl</div>
+
+<style>
+.slidev-layout {
+  --slidev-code-font-size: 0.72em;
+}
+.slidev-layout :deep(pre) {
+  margin-block: 0.25em;
+}
+</style>
 
 ---
+layout: two-cols-header
+layoutClass: gap-8 items-start !grid-cols-[minmax(0,3fr)_minmax(0,2fr)]
 class: text-sm
 ---
 
 # BioMakie.jl enables easy plotting of protein structure
+
+::left::
 
 ```julia
 using BioMakie
@@ -387,50 +417,51 @@ plotstruc!(fig, struc; plottype = :ballandstick, gridposition = (1,1), atomcolor
 plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2))
 ```
 
-<div class="flex items-center gap-6 mt-2">
-<div class="flex flex-col items-center gap-1">
-<img src="./images/cajun/dkool.jpeg" class="max-h-[8vh] border border-border" />
-<span class="text-sm font-mono">@dkool</span>
-</div>
-<img src="./images/cajun/struct1.png" class="max-h-[28vh]" />
+::right::
+
+<div class="flex flex-col items-center gap-2">
+<img src="./images/cajun/struct1.png" class="w-full max-h-[40vh] object-contain" />
 </div>
 
-<div class="citation-caption">author: `@dkool` · Repo: https://github.com/BioJulia/BioMakie.jl</div>
+::bottom::
+
+<div class="citation-caption !left-14">author: `@dkool` · Repo: https://github.com/BioJulia/BioMakie.jl
+
+</div>
+
 
 ---
 layout: two-cols-header
-layoutClass: gap-8 items-center
+layoutClass: gap-8 items-start
 ---
 
 # BioMakie.jl enables easy plotting of protein structure
 
 ::left::
 
-Viewing the frequencies of amino acids in a multiple sequence alignment
+<p class="-mt-2 mb-2">Viewing the frequencies of amino acids in a multiple sequence alignment</p>
 
-<img src="./images/cajun/msaselection.gif" class="rounded-md border border-border" />
+<img src="./images/cajun/msaselection.gif" class="max-h-56 rounded-md border border-border" />
 
 ::right::
 
 <div v-click>
 
-Database information can be displayed for a protein (including a GPT response, OpenAI.jl)
+<p class="-mt-2 mb-2">Database information can be displayed for a protein (including a GPT response, OpenAI.jl)</p>
 
-<img src="./images/cajun/dbinfo.gif" class="rounded-md border border-border" />
+<img src="./images/cajun/dbinfo.gif" class="max-h-56 rounded-md border border-border" />
 
 </div>
 
 ::bottom::
 
-<div class="citation-caption">Repo: https://github.com/BioJulia/BioMakie.jl</div>
+<div class="citation-caption !left-14">Repo: https://github.com/BioJulia/BioMakie.jl</div>
 
----
-layout: center
 ---
 
 # SingleCellProjections.jl enables fast, memory-efficient scRNAseq
 
-<img src="./images/cajun/ssp.svg" class="max-h-[60vh] mx-auto" />
+<img src="./images/cajun/ssp.svg" class="max-h-[20vh] mx-auto" />
 
 <div class="citation-caption">Repo: https://github.com/BioJulia/SingleCellProjections.jl</div>
 
@@ -438,9 +469,22 @@ layout: center
 
 # SingleCellProjections.jl enables fast, memory-efficient scRNAseq
 
-<img src="./images/cajun/ssp-benchmark.png" class="max-h-[70vh] mx-auto" />
+<img src="./images/cajun/ssp-benchmark.png" class="max-h-[20vh] mx-auto" />
 
 <div class="citation-caption">Repo: https://github.com/BioJulia/SingleCellProjections.jl</div>
+
+---
+
+# Limitations?
+
+## Come to our BoF! 
+
+### Using Julia for Computational Biology (and pharma, and health)
+
+14 August, 2026 15:45-16:45
+
+*Alte Mensa*
+
 
 ---
 layout: center
