@@ -88,7 +88,7 @@ est. 2014
 
 ---
 
-# First commit - Bio.jl c. 2015
+# First commit - Bio.jl Jan 2014
 
 ## Early Contributors:
 
@@ -190,7 +190,7 @@ layout: section
 
 - A loose collection of bioinformatics and other bio-related packages
 - "Led" by `@kescobo` (that's me) and `@jakobnissen` 
-  (but our authority is rather tepid)
+  (but our authority is rather... inconspicuous)
 - Main benefits of Org membership are discoverability (maybe)
   and increased bus factor in case you disappear
 - Unified documentation at https://biojulia.dev
