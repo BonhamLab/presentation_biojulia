@@ -49,3 +49,8 @@ jobs:
           tag: ${{ github.ref_name }}
           release-dir: dist/release
           release-notes: "Slide deck for ${{ github.ref_name }}. Click the PDF asset below to view it in your browser."
+          # Without this, the action errors (409) if a release for this tag
+          # already exists (e.g. you made one by hand in the UI before/after
+          # tagging). With it, re-running just replaces the release's assets
+          # and text — so a hand-written title/body here will get overwritten.
+          override: true
