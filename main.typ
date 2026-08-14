@@ -1,6 +1,8 @@
 #import "@preview/touying:0.7.4": *
 #import "assets/theme/bonham-theme.typ": *
 #import "@preview/cetz:0.4.2"
+#import "@preview/codly:1.3.0": *
+#import "@preview/codly-languages:0.1.10": *
 #import "assets/general/slides.typ": thank-you-slide, contact_info_slide
 
 #let cetz-canvas = touying-reducer.with(
@@ -17,14 +19,23 @@
   image(path, width: width),
 )
 
-// Card wrapper for code blocks so they read as panels against the dark bg.
-#let code-card(body) = box(
-  fill: bonham-dark.surface,
-  inset: 8pt,
-  radius: 4pt,
-  width: 100%,
-  body,
-)
+// Bulleted content slide with a body text size (replaces repeating
+// `#slide(align: top)[#set text(Npt) ...]`) — uses the theme's own
+// `setting:` hook instead of a manual `#set` inside the body.
+#let bullets(size: 19pt, body) = slide(align: top, setting: b => {
+  set text(size)
+  b
+})[#body]
+
+// Single centered framed image, full slide.
+#let img-slide(path, width: 65%) = slide[#align(center)[#framed(path, width: width)]]
+
+// Small mono/muted attribution or source-link line under a figure or code panel.
+#let credit(body, size: 0.65em) = align(center)[#text(
+  font: font-mono, size: size, fill: bonham-dark.text-muted,
+)[#body]]
+
+#show: codly-init.with()
 
 #show: bonham-theme.with(
   aspect-ratio: "16-9",
@@ -47,6 +58,22 @@
   dark-primary: bonham-light.primary,
   dark-accent: bonham-light.accent,
   dark-secondary: bonham-light.secondary,
+  // codly's per-page state must be restored before each slide is drawn,
+  // hence configuring it via `preamble` rather than a top-level `#codly(...)`.
+  config-common(preamble: {
+    codly(
+      languages: codly-languages + (
+        julia: (name: "Julia", color: rgb("#9558B2")),
+      ),
+      fill: bonham-dark.surface,
+      stroke: 0.75pt + bonham-dark.border,
+      radius: 4pt,
+      zebra-fill: none,
+      number-format: none,
+      lang-fill: lang => lang.color,
+      lang-stroke: none,
+    )
+  }),
   config-info(
     title: [The State of BioJulia],
     eyebrow: [BioJulia Minisymposium],
@@ -65,8 +92,7 @@
 
 == Biology and computing has a rich history
 
-#slide(align: top)[
-  #set text(15pt)
+#bullets(size: 15pt)[
   #set par(leading: 0.55em, spacing: 0.85em)
   - *1965* --- Dayhoff's Atlas of Protein Sequence and Structure
   #pause
@@ -138,10 +164,8 @@
       - *Sep 2023* --- `@jakobnissen` releases `Automa.jl` v1.0
     ],
     [
-      #uncover("1-")[#framed("images/dcjones_head.jpg", width: 45%)]
-      #v(0.6em)
-      #uncover("2-")[#framed("images/bicycle1885_head.jpg", width: 45%)]
-      #v(0.6em)
+      #uncover("1-")[#framed("images/dcjones_head.jpg", width: 45%) #v(0.6em)]
+      #uncover("2-")[#framed("images/bicycle1885_head.jpg", width: 45%) #v(0.6em)]
       #uncover("3-")[#framed("images/jakobnissen_head.jpg", width: 45%)]
     ],
   )
@@ -166,10 +190,8 @@
       - *May 2020* --- `Bio.jl` officially deprecated / archived
     ],
     [
-      #uncover("1-")[#framed("images/kescobo_head.png", width: 45%)]
-      #v(0.6em)
-      #uncover("2-")[#framed("images/bicycle1885_head.jpg", width: 45%)]
-      #v(0.6em)
+      #uncover("1-")[#framed("images/kescobo_head.png", width: 45%) #v(0.6em)]
+      #uncover("2-")[#framed("images/bicycle1885_head.jpg", width: 45%) #v(0.6em)]
       #uncover("2-")[#framed("images/transgirlcodes_head.jpg", width: 45%)]
     ],
   )
@@ -179,8 +201,7 @@
 
 == What is BioJulia?
 
-#slide(align: top)[
-  #set text(19pt)
+#bullets(size: 19pt)[
   - A loose collection of bioinformatics and other bio-related packages
   #pause
   - "Led" by `@kescobo` (that's me) and `@jakobnissen` --- but our authority is rather... inconspicuous
@@ -192,54 +213,43 @@
 
 == Most-starred repositories
 
-#slide[#align(center)[#framed("images/stars.svg", width: 85%)]]
+#img-slide("images/stars.svg", width: 85%)
 
 == Repository statistics
 
-#slide[#align(center)[#framed("images/repostats.svg", width: 85%)]]
+#img-slide("images/repostats.svg", width: 85%)
 
 == Contributor statistics
 
-#slide[#align(center)[#framed("images/commiters.svg", width: 85%)]]
+#img-slide("images/commiters.svg", width: 85%)
 
 = Highlights and growth areas
 
 == BioSequences.jl efficiently encodes biological sequences
 
-#slide(align: top)[
-  #set text(14pt)
-  #code-card[
-    ```julia
-    import Base: summarysize
-    using BioSequences, Random
+#bullets(size: 14pt)[
+  #touying-raw(lang: "julia", ```
+  import Base: summarysize
+  using BioSequences, Random
 
-    seq = randseq(DNAAlphabet{2}(), 512)
-    str = String(seq)
+  seq = randseq(DNAAlphabet{2}(), 512)
+  str = String(seq)
 
-    summarysize(seq) # 184
-    summarysize(str) # 520
-    ```
-  ]
-  #pause
-  #code-card[
-    ```julia
-    help?> DNAAlphabet{2}
-      DNA nucleotide alphabet.
+  summarysize(seq) # 184
+  summarysize(str) # 520
+  // pause
+  help?> DNAAlphabet{2}
+    DNA nucleotide alphabet.
 
-      DNAAlphabet has a parameter N determining the BitsPerSymbol
-      trait. Currently supported values of N are 2 and 4.
-    ```
-  ]
-  #pause
-  #code-card[
-    ```julia
-    julia> @btime findall(DNA_A, $seq);
-      1.487 μs (4 allocations: 1.92 KiB)
+    DNAAlphabet has a parameter N determining the BitsPerSymbol
+    trait. Currently supported values of N are 2 and 4.
+  // pause
+  julia> @btime findall(DNA_A, $seq);
+    1.487 μs (4 allocations: 1.92 KiB)
 
-    julia> @btime findall(==('A'), $str);
-      3.093 μs (4 allocations: 1.92 KiB)
-    ```
-  ]
+  julia> @btime findall(==('A'), $str);
+    3.093 μs (4 allocations: 1.92 KiB)
+  ```)
 ]
 
 == BioSequences.jl competes with special-purpose languages
@@ -252,9 +262,9 @@
     framed("images/cajun/seq-fig4.png"),
   )
   #v(0.6em)
-  #align(center)[#text(font: font-mono, size: 0.6em, fill: bonham-dark.text-muted)[
+  #credit(size: 0.6em)[
     Seq Language: https://doi.org/10.5281/zenodo.3374036 · Blog post: biojulia.dev/posts/seq-lang/
-  ]]
+  ]
 ]
 
 == BioSequences.jl competes with special-purpose languages
@@ -262,9 +272,9 @@
 #slide[
   #align(center)[#framed("images/cajun/seq-fig5.png", width: 55%)]
   #v(0.6em)
-  #align(center)[#text(font: font-mono, size: 0.6em, fill: bonham-dark.text-muted)[
+  #credit(size: 0.6em)[
     Seq Language: https://doi.org/10.5281/zenodo.3374036 · Blog post: biojulia.dev/posts/seq-lang/
-  ]]
+  ]
 ]
 
 == File parsing is a critical part of bioinformatics
@@ -276,42 +286,36 @@
     column-gutter: 1.5em,
     [
       *FASTA*
-      #code-card[
-        ```txt
-        > some header | other info
-        AATTACGC
-        > foo
-        AGGGAGATCCC
-        ```
-      ]
+      ```txt
+      > some header | other info
+      AATTACGC
+      > foo
+      AGGGAGATCCC
+      ```
       #v(0.5em)
       *FASTQ*
-      #code-card[
-        ```txt
-        @ some header | other info
-        AATTACGC
-        +
-        AAAAA#EE
-        @ foo
-        AGGGAGATCCC
-        +
-        AA#G</EEA6E
-        ```
-      ]
+      ```txt
+      @ some header | other info
+      AATTACGC
+      +
+      AAAAA#EE
+      @ foo
+      AGGGAGATCCC
+      +
+      AA#G</EEA6E
+      ```
     ],
     [
       *SAM*
-      #code-card[
-        ```txt
-        @HD  VN:1.0  SO:unsorted
-        @SQ  SN:1455__A0A0C2TZA5__A3781_04875  LN:1008
-        @SQ  SN:1455__A0A0C2XRW0__A3781_18225  LN:804
-        @SQ  SN:1455__A0A0C2XXQ4__A3781_14565  LN:867
-        ...
-        VH01194:15:AAAWT2VHV:1:1101  16  cobJ  67  3
-        150M  *  0  0  CTGCAGGCGGCG...  AS:i:-59  NM:i:12
-        ```
-      ]
+      ```txt
+      @HD  VN:1.0  SO:unsorted
+      @SQ  SN:1455__A0A0C2TZA5__A3781_04875  LN:1008
+      @SQ  SN:1455__A0A0C2XRW0__A3781_18225  LN:804
+      @SQ  SN:1455__A0A0C2XXQ4__A3781_14565  LN:867
+      ...
+      VH01194:15:AAAWT2VHV:1:1101  16  cobJ  67  3
+      150M  *  0  0  CTGCAGGCGGCG...  AS:i:-59  NM:i:12
+      ```
       #pause
       #v(0.8em)
       #align(center)[
@@ -329,42 +333,26 @@
 
 == Automa.jl builds correct, efficient parsers
 
-#slide(align: top)[
+#bullets(size: 13pt)[
   #align(center)[#framed("images/cajun/Automa.png", width: 76%)]
   #v(0.6em)
-  #set text(13pt)
-  #grid(
-    columns: (1fr, 1fr),
-    column-gutter: 1.5em,
-    [
-      #pause
-      #code-card[
-        ```julia
-        fasta_regex = let
-            header = re"[a-z]+"
-            seqline = re"[ACGT]+"
-            record = '>' * header * '\n' * rep1(seqline * '\n')
-            rep(record)
-        end
-        ```
-      ]
-    ],
-    [
-      #pause
-      #code-card[
-        ```julia
-        machine = let
-            header = onexit!(onenter!(re"[a-z]+", :mark_pos), :header)
-            seqline = onexit!(onenter!(re"[ACGT]+", :mark_pos), :seqline)
-            record = onexit!(re">" * header * '\n' * rep1(seqline * '\n'), :record)
-            compile(rep(record))
-        end
-        ```
-      ]
-    ],
-  )
+  #touying-raw(lang: "julia", ```
+  fasta_regex = let
+      header = re"[a-z]+"
+      seqline = re"[ACGT]+"
+      record = '>' * header * '\n' * rep1(seqline * '\n')
+      rep(record)
+  end
+  // pause
+  machine = let
+      header = onexit!(onenter!(re"[a-z]+", :mark_pos), :header)
+      seqline = onexit!(onenter!(re"[ACGT]+", :mark_pos), :seqline)
+      record = onexit!(re">" * header * '\n' * rep1(seqline * '\n'), :record)
+      compile(rep(record))
+  end
+  ```)
   #v(0.5em)
-  #text(font: font-mono, size: 0.65em, fill: bonham-dark.text-muted)[
+  #credit[
     author: `@bicycle1885`, many improvements: `@jakobnissen` · Repo: github.com/BioJulia/Automa.jl
   ]
 ]
@@ -377,26 +365,24 @@
     columns: (3fr, 2fr),
     column-gutter: 1.5em,
     [
-      #code-card[
-        ```julia
-        using BioMakie
-        using GLMakie
-        using BioStructures
-        struc = retrievepdb("2vb1") |> Observable
-        ## or
-        struc = read("2vb1.pdb", BioStructures.PDB) |> Observable
+      ```julia
+      using BioMakie
+      using GLMakie
+      using BioStructures
+      struc = retrievepdb("2vb1") |> Observable
+      ## or
+      struc = read("2vb1.pdb", BioStructures.PDB) |> Observable
 
-        fig = Figure()
-        plotstruc!(fig, struc; plottype = :ballandstick,
-            gridposition = (1, 1), atomcolors = aquacolors)
-        plotstruc!(fig, struc; plottype = :covalent, gridposition = (1, 2))
-        ```
-      ]
+      fig = Figure()
+      plotstruc!(fig, struc; plottype = :ballandstick,
+          gridposition = (1, 1), atomcolors = aquacolors)
+      plotstruc!(fig, struc; plottype = :covalent, gridposition = (1, 2))
+      ```
     ],
     align(center)[#framed("images/cajun/struct1.png", width: 95%)],
   )
   #v(0.4em)
-  #text(font: font-mono, size: 0.65em, fill: bonham-dark.text-muted)[
+  #credit[
     author: `@dkool` · Repo: github.com/BioJulia/BioMakie.jl
   ]
 ]
@@ -420,7 +406,7 @@
     ],
   )
   #v(0.4em)
-  #text(font: font-mono, size: 0.65em, fill: bonham-dark.text-muted)[Repo: github.com/BioJulia/BioMakie.jl]
+  #credit[Repo: github.com/BioJulia/BioMakie.jl]
 ]
 
 == SingleCellProjections.jl enables fast, memory-efficient scRNA-seq
@@ -428,9 +414,9 @@
 #slide[
   #align(center)[#framed("images/cajun/ssp.svg", width: 55%)]
   #v(0.5em)
-  #align(center)[#text(font: font-mono, size: 0.65em, fill: bonham-dark.text-muted)[
+  #credit[
     Repo: github.com/BioJulia/SingleCellProjections.jl
-  ]]
+  ]
 ]
 
 == SingleCellProjections.jl enables fast, memory-efficient scRNA-seq
@@ -438,9 +424,9 @@
 #slide[
   #align(center)[#framed("images/cajun/ssp-benchmark.png", width: 55%)]
   #v(0.5em)
-  #align(center)[#text(font: font-mono, size: 0.65em, fill: bonham-dark.text-muted)[
+  #credit[
     Repo: github.com/BioJulia/SingleCellProjections.jl
-  ]]
+  ]
 ]
 
 #focus-slide[
